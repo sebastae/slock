@@ -1,3 +1,16 @@
+# Slock, a simple screen locker
+
+Forked from https://git.suckless.org/slock/
+
+## Changes
+
+The changes in this repo adds an indicator for when Caps Lock is enabled by making the screen purple
+
+
+Below the line is the original README
+
+---
+
 slock - simple screen locker
 ============================
 simple screen locker utility for X.
