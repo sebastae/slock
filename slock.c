@@ -18,6 +18,7 @@
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/XKBlib.h>
 
 #include "arg.h"
 #include "util.h"
@@ -27,6 +28,7 @@ char *argv0;
 enum {
 	INIT,
 	INPUT,
+	CPSLCK,
 	FAILED,
 	NUMCOLS
 };
@@ -131,7 +133,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 	XRRScreenChangeNotifyEvent *rre;
 	char buf[32], passwd[256], *inputhash;
 	int num, screen, running, failure, oldc;
-	unsigned int len, color;
+	unsigned int len, color, cpslck_state;
 	KeySym ksym;
 	XEvent ev;
 
@@ -188,6 +190,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				break;
 			}
 			color = len ? INPUT : ((failure || failonclear) ? FAILED : INIT);
+			if(XkbGetIndicatorState(dpy, XkbUseCoreKbd, &cpslck_state) == Success && (cpslck_state & 1) != 0){
+				color = CPSLCK;
+			}
 			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
 					XSetWindowBackground(dpy,
